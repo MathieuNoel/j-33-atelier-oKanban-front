@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-=======
+
 # oKanban-front, jour 2
 
 Avant de commencer cette partie de l'atelier, n'oublie pas de régler le souci de dynamisation de l'atelier 1 si ça n'a pas déjà été fait ! En gros, l'ajout d'une carte dans une nouvelle liste doit être fonctionnel !
@@ -18,7 +17,7 @@ Commence par ajouter une propriété `base_url` dans app. Sa valeur est l'url "d
 
 Crée ensuite une méthode `getListsFromAPI` dans app. Pour faciliter la suite, cette fonction est `async`.
 
-Dans cette méthode, utilise [fetch](https://developer.mozilla.org/fr/docs/Web/API/Fetch_API/Using_Fetch) pour appeller la route "GET /lists" de l'api.
+Dans cette méthode, utilise [fetch](https://developer.mozilla.org/fr/docs/Web/API/Fetch_API/Using_Fetch) pour appeller la route "GET /list" de l'api.
 
 Utilise le résultat de la requête fetch, ainsi que les fonctions développées hier, pour créer les vraies listes dans le DOM !
 

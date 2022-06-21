@@ -1,14 +1,17 @@
 
 // on objet qui contient des fonctions
 var app = {
-
+  
+  
   // fonction d'initialisation, lancée au chargement de la page
   init: function () {
-<<<<<<< HEAD
-    console.log('app.init !');
-=======
+    app.base_url='http://localhost:3000',
     app.addListenerToActions();
+    app.getListsFromAPI();    
   },
+ 
+  
+ 
   addListenerToActions: function() {
     // mettre un écouteur d'évènement clic sur le bouton d'ajout de liste
     document.getElementById('addListButton').addEventListener('click', app.showAddListModal);
@@ -51,55 +54,83 @@ var app = {
       modal.classList.remove('is-active');
     }
   },
-  handleAddListForm: function(event) {
+  handleAddListForm: async function(event) {
     // il faut empêcher le comportement par défaut de l'event submit, à savoir l'envoi d'une requête HTTP et donc le rechargement de la page
     event.preventDefault();
     // récupérer les infos du formulaire
+    const position = document.querySelectorAll('.column.is-one-quarter.panel').length
+    
     const formData = new FormData(event.target);
+    formData.append("position", position+1)
+    const response = await fetch(`${app.base_url}/list`, {method: 'POST', body:formData})
+    const listData = await response.json()
     // faire apparaitre une nouvelle liste dans le DOM
-    app.makeListInDOM(formData);
+    
+    app.makeListInDOM(listData);
     // reset les champs du formulaire
     event.target.reset();
     // cacher la modale
     app.hideModals();
   },
-  makeListInDOM: function(formData) {
+  makeListInDOM: function(list) {  
     // créer une nouvelle liste dans le DOM
     // récupérer le template
     const template = document.getElementById('templateList');
     // en faire un clone
     const cloneTemplate = document.importNode(template.content, true);
     // le modifier (nom de la liste)
-    cloneTemplate.querySelector('h2').textContent = formData.get('name');
+    cloneTemplate.querySelector('h2').textContent = list.name;  
+    cloneTemplate.querySelector('.column[data-list-id=""]').dataset.listId = list.id;
     // insérer dans la page concrètement
     document.querySelector('.card-lists').appendChild(cloneTemplate);
+    app.addListenerToActions();    
   },
-  handleAddCardForm: function(event) {
-    // empêcher le rechargement de la page
+  handleAddCardForm: async function(event) {
     event.preventDefault();
+    const position = document.querySelectorAll('.box[data-card-id=""]').length
+    // empêcher le rechargement de la page
     // récupérer les infos du formulaire
     const formData = new FormData(event.target);
-    // créer la carte dans le DOM
-    app.makeCardInDOM(formData);
+    formData.append("position", position+1)
+    const response = await fetch(`${app.base_url}/card`, {method: 'POST', body:formData})
+    const cardData = await response.json()
+    console.log('LOLOLOLOLOLOLOLO',cardData)
+    // créer la carte dans le DOM  
+    app.makeCardInDOM(cardData);
     // reset les champs du formulaire
     event.target.reset();
     // cacher la modale
     app.hideModals();
   },
-  makeCardInDOM: function(formData) {
+  makeCardInDOM: async function(card) {
+    
     // récupérer le template de card
     const template = document.getElementById('templateCard');
     // cloner le template
     const cloneTemplate = document.importNode(template.content, true);
     // modifier le titre de la carte
-    cloneTemplate.querySelector('.column').textContent = formData.get('name');
+    cloneTemplate.querySelector('.column').textContent = card.title;
     // insérer le clone du template dans la bonne liste du DOM
-    const listDOM = document.querySelector(`.panel[data-list-id="${formData.get('list_id')}"]`);
+    cloneTemplate.querySelector(`.box[data-card-id=""]`).dataset.cardId = card.id
+    const listDOM =document.querySelector(`.panel[data-list-id="${card.list_id}"]`);
+    
     // on insère la carte dans le block container de list
-    listDOM.querySelector('.panel-block').appendChild(cloneTemplate);
->>>>>>> bb97961f1c280495211a150f8c002e73f5e5811a
-  }
+    listDOM.querySelector('.panel-block').appendChild(cloneTemplate);    
 
+  },
+  getListsFromAPI: async function(req, res) {
+    try {
+      const response = await fetch(`${app.base_url}/list`);      
+      const lists = await response.json();  
+      lists.forEach( (list) => { 
+        console.log(list)       
+        app.makeListInDOM(list); 
+        list.cards.forEach( (card) =>{ app.makeCardInDOM(card)})
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  },
 };
 
 

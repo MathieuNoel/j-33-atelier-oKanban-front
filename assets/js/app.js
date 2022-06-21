@@ -4,7 +4,15 @@ var app = {
 
   // fonction d'initialisation, lancée au chargement de la page
   init: function () {
-    console.log('app.init !');
+    app.addListenerToActions();
+  },
+  addListenerToActions: function() {
+    // mettre un écouteur d'évènement clic sur le bouton d'ajout de liste
+    document.getElementById('addListButton').addEventListener('click', app.showAddListModal);
+  },
+  showAddListModal: function() {
+    // afficher la modale à l'écran
+    document.getElementById('addListModal').classList.add('is-active');
   }
 
 };

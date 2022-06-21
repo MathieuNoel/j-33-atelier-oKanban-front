@@ -9,24 +9,20 @@ var app = {
 
   addListeners: function () {
     // Ajout d'un event listener sur le bouton "Ajouter une liste".
-    const addListBtnElm = document.querySelector('#addListButton');
-    addListBtnElm.addEventListener('click', app.displayAddListModal);
+    document.querySelector('#addListButton').addEventListener('click', app.displayAddListModal);    
 
     // Ajout d'un event listener sur les boutons permettant d'ajouter une carte à une liste.
-    const addCardBtnElm = document.querySelectorAll('.is-pulled-right');
-    addCardBtnElm.forEach(button => button.addEventListener('click', app.displayAddCardModal));
+    document.querySelectorAll('.is-pulled-right').forEach(button => button.addEventListener('click', app.displayAddCardModal));    
 
     // Ajout d'un event listener sur les boutons permettant de fermer les modales.
-    const closeModalButtonsElm = document.querySelectorAll('.close');
-    closeModalButtonsElm.forEach(button => button.addEventListener('click', app.closeModals));
+    document.querySelectorAll('.close').forEach(button => button.addEventListener('click', app.hideModals));    
 
     // Ajout d'un event listener sur le bouton de validation du formulaire permettant d'ajouter une liste.
-    const listModalFormElm = document.querySelector('#addListModal form');
-    listModalFormElm.addEventListener('submit', app.handleListForm);
+    document.querySelector('#addListModal form').addEventListener('submit', app.handleListForm);    
 
     // Ajout d'un event listener sur le bouton de validation du formulaire permettant d'ajouter une carte.
-    const cardModalFormElm = document.querySelector('#addCardModal form');
-    cardModalFormElm.addEventListener('submit', app.handleCardForm);
+    document.querySelector('#addCardModal form').addEventListener('submit', app.handleCardForm);
+    
   },
 
   // Méthode permettant d'afficher la modale "Ajouter une liste".
@@ -38,9 +34,9 @@ var app = {
   // Méthode permettant de gérer la validation du formulaire "Ajouter une liste".
   handleListForm: function (e) {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    const newListName = formData.get('name');
-    app.makeListInDOM(newListName);
+    const formData = new FormData(e.target).get('name');
+    
+    app.makeListInDOM(formData);
   },
 
   // Méthode permettant d'ajouter la nouvelle liste au DOM.
@@ -68,7 +64,7 @@ var app = {
     createdList.addEventListener('click', app.displayAddCardModal);
     
     // On ferme toutes les modales.
-    app.closeModals();
+    app.hideModals();
   },
 
   // Méthode permettant d'afficher la modale "Ajouter une carte".
@@ -86,24 +82,24 @@ var app = {
   handleCardForm: function (e) {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const newCardName = formData.get('name');
-    const newCardListId = formData.get('list_id');
-    app.makeCardInDOM(newCardName, newCardListId);
+    
+    app.makeCardInDOM(formData);
+    app.hideModals();
   },
 
 // Méthode permettant d'ajouter la nouvelle carte dans la bonne liste.
-  makeCardInDOM: function (cardName, id) {
-    const parentList = document.querySelector(`[data-list-id = ${id}] .panel-block`);
+  makeCardInDOM: function (formData) {
+    const parentList = document.querySelector(`[data-list-id = ${formData.get("list_id")}] .panel-block`);
     const cardTemplate = document.querySelector('#card-template');
     const clone = document.importNode(cardTemplate.content, true);
     const cardTitle = clone.querySelector('#card-template_title');
-    cardTitle.textContent = `${cardName}`;
+    cardTitle.textContent = `${formData.get("name")}`;
     parentList.append(clone);
-    app.closeModals();
+    
   },
 
   // Méthode permettant de fermer la (les) modales et de vider les champs.
-  closeModals: function () {
+  hideModals: function () {
     const allModalsElm = document.querySelectorAll('.modal');
     const modalsInputs = document.querySelectorAll('.modal input');
     allModalsElm.forEach(modal => modal.classList.remove('is-active'));

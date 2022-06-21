@@ -16,6 +16,8 @@ var app = {
       // pour chaque bouton close on déclencher la fonction hideModals
       btnClose.addEventListener('click', app.hideModals);
     }
+    // ajouter un écouteur d'event submit sur le formulaire d'ajout de liste
+    document.querySelector('#addListModal form').addEventListener('submit', app.handleAddListForm);
 
   },
   showAddListModal: function() {
@@ -29,6 +31,28 @@ var app = {
       // on cache toutes les modals
       modal.classList.remove('is-active');
     }
+  },
+  handleAddListForm: function(event) {
+    // il faut empêcher le comportement par défaut de l'event submit, à savoir l'envoi d'une requête HTTP et donc le rechargement de la page
+    event.preventDefault();
+    // récupérer les infos du formulaire
+    const formData = new FormData(event.target);
+    // faire apparaitre une nouvelle liste dans le DOM
+    app.makeListInDOM(formData)
+    // cacher la modale
+    app.hideModals();
+    
+  },
+  makeListInDOM: function(formData) {
+    // créer une nouvelle liste dans le DOM
+    // récupérer le template
+    const template = document.getElementById('templateList');
+    // en faire un clone
+    const cloneTemplate = document.importNode(template.content, true);
+    // le modifier (nom de la liste)
+    cloneTemplate.querySelector('h2').textContent = formData.get('name');
+    // insérer dans la page concrètement
+    document.querySelector('.card-lists').appendChild(cloneTemplate);
   }
 
 };

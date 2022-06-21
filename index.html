@@ -237,6 +237,31 @@
         </div>
     </div>
 
+    <div class="modal" id="addCardModal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <form action="" method="POST">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Ajouter une carte</p>
+                    <button class="delete close" type="button" aria-label="close"></button>
+                </header>
+                <section class="modal-card-body">
+                    <div class="field">
+                        <label class="label">Nom</label>
+                        <div class="control">
+                            <input type="text" class="input" name="name" value="" placeholder="Nom de la carte">
+                            <input type="hidden" name="list_id" value="">
+                        </div>
+                    </div>
+                </section>
+                <footer class="modal-card-foot">
+                    <button class="button is-success">Save changes</button>
+                    <button class="button close" type="button">Cancel</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
     <template id="templateList">
         <!-- list -->
         <div class="column is-one-quarter panel" data-list-id="">
@@ -274,6 +299,30 @@
             </div>
         </div>
         <!--/ list -->
+    </template>
+
+    <template id="templateCard">
+        <!-- card -->
+        <div class="box" data-card-id="">
+            <div class="columns">
+                <div class="column">
+                    
+                </div>
+                <div class="column is-narrow">
+                    <a href="#">
+                        <span class="icon is-small has-text-primary">
+                            <i class="fas fa-pencil-alt"></i>
+                        </span>
+                    </a>
+                    <a href="#">
+                        <span class="icon is-small has-text-danger">
+                            <i class="fas fa-trash-alt"></i>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!--/ card -->
     </template>
 
     <!-- Chargement de mon fichier JS -->

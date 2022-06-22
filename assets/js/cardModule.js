@@ -40,39 +40,64 @@ const cardModule = {
         // modifier le titre de la carte
         cloneTemplate.querySelector('.column').textContent = card.title;
         // modifier sa couleur de fond
-        cardDOM.style.backgroundColor = card.color;
-        //    
+        cardDOM.style.backgroundColor = card.color;            
         // insérer le clone du template dans la bonne liste du DOM
         const listDOM = document.querySelector(`.panel[data-list-id="${card.list_id}"]`);
-        cloneTemplate.querySelector('.update-card').addEventListener('click', utilsModule.modifyNameCard)
+        // je place un ecouteur d'événement sur le stylo de la carte pour modifier le nom
+        cloneTemplate.querySelector('.update-card').addEventListener('click', utilsModule.updateCard)
+        // je place un écouteur d'événement sur la corbeil pour supprimer la liste
+        cloneTemplate.querySelector('.delete-card').addEventListener('click', utilsModule.deleteCard)
         // on insère la carte dans le block container de list
         listDOM.querySelector('.panel-block').appendChild(cloneTemplate);
       },
 
-      updateCardName: async function(event) {
-           // je récupère les données du formulaire       
-           const formData = new FormData(event.target);
-           console.log(formData) 
-           // je cible l'événement       
-           const origin = event.target;
-           // je récupère l'élément du DOM le plus proche qui possède une id
-           const idOrigine = origin.closest('[data-card-id]');
-           // je récupère juste l'id
-           const id = idOrigine.getAttribute('data-card-id');         
-           try {
-             // je lance un fetch sur l'API sur la route /cards/:id
-             const response = await fetch(`${utilsModule.base_url}/cards/${id}`, {
-               method: 'PATCH',
-               body: formData
-             }); 
-             // je test si une réponce est bien reçu
-             if(!response.ok){
-               // sinon
-               throw new Error(response.status)
-             }         
-           } catch (error) {
-             console.log(error)
-           }
-         }
+      updateCard: async function(event) {
+        // je récupère les données du formulaire       
+        const formData = new FormData(event.target);         
+        // je cible l'événement       
+        const origin = event.target;
+        // je récupère l'élément du DOM le plus proche qui possède une id
+        const idOrigine = origin.closest('[data-card-id]');
+        // je récupère juste l'id
+        const id = idOrigine.getAttribute('data-card-id');         
+        try {
+          // je lance un fetch sur l'API sur la route /cards/:id
+          const response = await fetch(`${utilsModule.base_url}/cards/${id}`, {
+            method: 'PATCH',
+            body: formData
+          }); 
+          // je test si une réponce est bien reçu
+          if(!response.ok){
+            // sinon
+            throw new Error(response.status)
+          }         
+        } catch (error) {
+          console.log(error)
+        }
+        location.reload()
+      },
+
+      deleteCard: async function(id) {
+        //je laisse une chance de ne pas supprimer
+        const validate = confirm('are you sure')
+        try {
+          // et si il décide de bien supprimer , alors je delete
+          if(validate){
+            const validate = alert('are you sur')
+            console.log(validate);
+            // je lance un fetch sur l'API sur la route /cards/:id
+            const response = await fetch(`${utilsModule.base_url}/cards/${id}`,{method: 'DELETE'}); 
+            // je test si une réponce est bien reçu
+            if(!response.ok){
+              // sinon
+              throw new Error(response.status)
+            }
+          }           
+        } catch (error) {
+          console.log(error)
+        }
+        location.reload()
+      }
+
       
 }

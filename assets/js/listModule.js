@@ -40,7 +40,9 @@ const listModule = {
         // je met en place un ecouteur d'événement au double-click su le titre de la carte
         cloneTemplate.querySelector("h2").addEventListener('dblclick', utilsModule.modifyNameList)        
         // ajouter un écouteur d'event sur le bouton + pour afficher la modale de carte
-        cloneTemplate.querySelector('.panel a.is-pulled-right').addEventListener('click', cardModule.showAddCardModal);        
+        cloneTemplate.querySelector('.panel a.is-pulled-right').addEventListener('click', cardModule.showAddCardModal);
+        //ajouter un écouteur d'event sur le bouton poubelle pour supprimer la liste
+        cloneTemplate.querySelector('.delete-list').addEventListener('click', utilsModule.deleteList)
         // insérer dans la page concrètement
         document.querySelector('.card-lists').appendChild(cloneTemplate);
       },
@@ -69,6 +71,29 @@ const listModule = {
         } catch (error) {
           console.log(error)
         }
+        location.reload()
+      },
+
+      deleteList: async function(id){
+        //je laisse une chance de ne pas supprimer
+        const validate = confirm('are you sure')
+        
+        if(validate){
+        try {
+          // et si il décide de bien supprimer , alors je delete
+            // je lance un fetch sur l'API sur la route /cards/:id
+            const response = await fetch(`${utilsModule.base_url}/lists/${id}`,{method: 'DELETE'}); 
+            // je test si une réponce est bien reçu
+            if(!response.ok){
+              // sinon
+              throw new Error(response.status)
+            }
+                    
+        } catch (error) {
+          console.log(error)
+        }
+        location.reload()
+      }
       }
      
 }

@@ -9,7 +9,7 @@ const utilsModule = {
           modal.classList.remove('is-active');
         }
       },
-      // je crée une fonction qui agis aux double-click
+      // je crée une fonction qui agis aux double-click du nom de la liste
       modifyNameList: function(event) { 
         // cible l'élément qui vient d'être double-clicker 
         const titleListElm = event.currentTarget;
@@ -25,17 +25,46 @@ const utilsModule = {
         formElem.addEventListener('submit', listModule.updateListName);
       },
 
-      modifyNameCard: function(event) {
+      // je crée une fonction qui agis au click du crayon
+      updateCard: function(event) {
+        // cible l'élément qui vient d'être clicker
         const titleCardElem = event.target;
-        console.log('1111',titleCardElem);
+        // je récupère l'élément du DOM le plus proche qui passède une id lié a event
         const cardTitle = titleCardElem.closest('[data-card-id]')
-        console.log('22222',cardTitle);
+        // je récupère le titre que je veux modifier
         const title = cardTitle.querySelector('.is-title')
+        // j'ajoute la classe qui cache le titre de la liste  
         title.classList.add('is-hidden');
+        // je récupère le formulaire dans cette même carte
         const formCardElem = cardTitle.querySelector('form')        
-        console.log('333333',formCardElem);        
+        // je retire la class qui cache le form     
         formCardElem.classList.remove('is-hidden');
-        formCardElem.addEventListener('submit', cardModule.updateCardName);
+        // je soumet mon formulair dans FormData
+        formCardElem.addEventListener('submit', cardModule.updateCard);
+      },
+
+      // je crée une fonction qui agis au click de la poubelle pour une cartes
+      deleteCard: function(event) {
+        // cible l'élément qui vient d'être clicker
+        const cardElem = event.target;        
+        // je récupère l'élément du DOM le plus proche qui passède une id lié a event
+        const cardSelect = cardElem.closest('[data-card-id]');
+        // je retouve juste l'id 
+        const id = cardSelect.dataset.cardId;
+        // je call la fonction deleteCard
+        cardModule.deleteCard(id);
+      },
+
+      // je crée une fonction qui agis au click de la poubelle pour une liste
+      deleteList: function(event) {
+        // cible l'élément qui vient d'être clicker
+        const listElem = event.target;  
+        // je récupère l'élément du DOM le plus proche qui passède une id lié a event
+        const listSelect = listElem.closest('[data-list-id]');        
+        // je retouve juste l'id 
+        const id = listSelect.dataset.listId;  
+        // je call la fonction deleteCard
+        listModule.deleteList(id);
       }
 
 

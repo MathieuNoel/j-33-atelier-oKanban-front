@@ -41,9 +41,38 @@ const cardModule = {
         cloneTemplate.querySelector('.column').textContent = card.title;
         // modifier sa couleur de fond
         cardDOM.style.backgroundColor = card.color;
+        //    
         // insérer le clone du template dans la bonne liste du DOM
         const listDOM = document.querySelector(`.panel[data-list-id="${card.list_id}"]`);
+        cloneTemplate.querySelector('.update-card').addEventListener('click', utilsModule.modifyNameCard)
         // on insère la carte dans le block container de list
         listDOM.querySelector('.panel-block').appendChild(cloneTemplate);
       },
+
+      updateCardName: async function(event) {
+           // je récupère les données du formulaire       
+           const formData = new FormData(event.target);
+           console.log(formData) 
+           // je cible l'événement       
+           const origin = event.target;
+           // je récupère l'élément du DOM le plus proche qui possède une id
+           const idOrigine = origin.closest('[data-card-id]');
+           // je récupère juste l'id
+           const id = idOrigine.getAttribute('data-card-id');         
+           try {
+             // je lance un fetch sur l'API sur la route /cards/:id
+             const response = await fetch(`${utilsModule.base_url}/cards/${id}`, {
+               method: 'PATCH',
+               body: formData
+             }); 
+             // je test si une réponce est bien reçu
+             if(!response.ok){
+               // sinon
+               throw new Error(response.status)
+             }         
+           } catch (error) {
+             console.log(error)
+           }
+         }
+      
 }

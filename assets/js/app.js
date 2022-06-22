@@ -5,6 +5,7 @@ var app = {
   init: function () {
     app.getListsFromAPI();
     app.addListenerToActions();
+    
   },
   addListenerToActions: function() {
     // mettre un écouteur d'évènement clic sur le bouton d'ajout de liste
@@ -18,7 +19,7 @@ var app = {
     }
     // ajouter un écouteur d'event submit sur le formulaire d'ajout de liste
     document.querySelector('#addListModal form').addEventListener('submit', listModule.handleAddListForm);
-    // ajouter un écouteur d'event click sur les boutons +
+    // ajouter un écouteur d'event click sur les boutons 
     // const btnsAddCard = document.querySelectorAll('.panel a.is-pulled-right');
     // for(const btnAddCard of btnsAddCard) {
     //   btnAddCard.addEventListener('click', app.showAddCardModal);
@@ -43,7 +44,7 @@ var app = {
           cardModule.makeCardInDOM(card);
         }
       }
-
+      
     } catch(error) {
       console.error(error);
       alert('Impossible de récupérer les listes !');

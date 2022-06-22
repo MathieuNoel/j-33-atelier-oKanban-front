@@ -68,6 +68,8 @@ var app = {
     const cloneTemplate = document.importNode(template.content, true);
     // le modifier (nom de la liste)
     cloneTemplate.querySelector('h2').textContent = formData.get('name');
+    // ajouter un écouteur d'event sur le bouton + pour afficher la modale de carte
+    cloneTemplate.querySelector('.panel a.is-pulled-right').addEventListener('click', app.showAddCardModal);
     // insérer dans la page concrètement
     document.querySelector('.card-lists').appendChild(cloneTemplate);
   },

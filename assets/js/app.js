@@ -1,9 +1,11 @@
 
 // on objet qui contient des fonctions
 var app = {
+  base_url: 'http://localhost:3000',
 
   // fonction d'initialisation, lancée au chargement de la page
   init: function () {
+    app.getListsFromAPI();
     app.addListenerToActions();
   },
   addListenerToActions: function() {
@@ -19,10 +21,10 @@ var app = {
     // ajouter un écouteur d'event submit sur le formulaire d'ajout de liste
     document.querySelector('#addListModal form').addEventListener('submit', app.handleAddListForm);
     // ajouter un écouteur d'event click sur les boutons +
-    const btnsAddCard = document.querySelectorAll('.panel a.is-pulled-right');
-    for(const btnAddCard of btnsAddCard) {
-      btnAddCard.addEventListener('click', app.showAddCardModal);
-    }
+    // const btnsAddCard = document.querySelectorAll('.panel a.is-pulled-right');
+    // for(const btnAddCard of btnsAddCard) {
+    //   btnAddCard.addEventListener('click', app.showAddCardModal);
+    // }
     // ajouter un écouteur d'évènement submit sur le formulaire d'ajout de carte
     document.querySelector('#addCardModal form').addEventListener('submit', app.handleAddCardForm);
   },
@@ -48,54 +50,104 @@ var app = {
       modal.classList.remove('is-active');
     }
   },
-  handleAddListForm: function(event) {
+  handleAddListForm: async function(event) {
     // il faut empêcher le comportement par défaut de l'event submit, à savoir l'envoi d'une requête HTTP et donc le rechargement de la page
     event.preventDefault();
     // récupérer les infos du formulaire
     const formData = new FormData(event.target);
-    // faire apparaitre une nouvelle liste dans le DOM
-    app.makeListInDOM(formData);
+    try {
+      // on fait un call API en POST sur /lists
+      const response = await fetch(`${app.base_url}/lists`, {
+        method: 'POST',
+        body: formData
+      });
+      const newList = await response.json();
+      // faire apparaitre une nouvelle liste dans le DOM
+      app.makeListInDOM(newList);
+    } catch(error) {
+      console.error(error);
+      alert('Impossible d\'ajouter une liste !');
+    }
+    
     // reset les champs du formulaire
     event.target.reset();
     // cacher la modale
     app.hideModals();
   },
-  makeListInDOM: function(formData) {
+  makeListInDOM: function(list) {
     // créer une nouvelle liste dans le DOM
     // récupérer le template
     const template = document.getElementById('templateList');
     // en faire un clone
     const cloneTemplate = document.importNode(template.content, true);
+    // modifier son data attribute id
+    cloneTemplate.querySelector('.panel').dataset.listId = list.id;
     // le modifier (nom de la liste)
-    cloneTemplate.querySelector('h2').textContent = formData.get('name');
+    cloneTemplate.querySelector('h2').textContent = list.name;
     // ajouter un écouteur d'event sur le bouton + pour afficher la modale de carte
     cloneTemplate.querySelector('.panel a.is-pulled-right').addEventListener('click', app.showAddCardModal);
     // insérer dans la page concrètement
     document.querySelector('.card-lists').appendChild(cloneTemplate);
   },
-  handleAddCardForm: function(event) {
+  handleAddCardForm: async function(event) {
     // empêcher le rechargement de la page
     event.preventDefault();
     // récupérer les infos du formulaire
     const formData = new FormData(event.target);
+    // faire un call API en POST sur /cards
+    const response = await fetch(`${app.base_url}/cards`, {
+      method: 'POST',
+      body: formData
+    });
+    // on récupère la nouvelle carte
+    const newCard = await response.json();
+
     // créer la carte dans le DOM
-    app.makeCardInDOM(formData);
+    app.makeCardInDOM(newCard);
     // reset les champs du formulaire
     event.target.reset();
     // cacher la modale
     app.hideModals();
   },
-  makeCardInDOM: function(formData) {
+  makeCardInDOM: function(card) {
     // récupérer le template de card
     const template = document.getElementById('templateCard');
     // cloner le template
     const cloneTemplate = document.importNode(template.content, true);
+    // modifie l'identifiant de la carte dans le DOM
+    const cardDOM = cloneTemplate.querySelector('.box');
+    cardDOM.dataset.cardId = card.id;
     // modifier le titre de la carte
-    cloneTemplate.querySelector('.column').textContent = formData.get('name');
+    cloneTemplate.querySelector('.column').textContent = card.title;
+    // modifier sa couleur de fond
+    cardDOM.style.backgroundColor = card.color;
     // insérer le clone du template dans la bonne liste du DOM
-    const listDOM = document.querySelector(`.panel[data-list-id="${formData.get('list_id')}"]`);
+    const listDOM = document.querySelector(`.panel[data-list-id="${card.list_id}"]`);
     // on insère la carte dans le block container de list
     listDOM.querySelector('.panel-block').appendChild(cloneTemplate);
+  },
+  // récupérer les listes depuis l'API et les afficher dans le DOM
+  getListsFromAPI: async function() {
+    try {
+      // on fait un call API en GET sur /lists pour récupérer l'objet response avec nos listes
+      const response = await fetch(`${app.base_url}/lists`);
+      // on appelle la méthode json sur l'objet response obtenu pour récupérer directement notre tableau de listes (la data)
+      const lists = await response.json();
+
+      console.log(lists);
+      
+      // dessiner les listes dans le DOM
+      for(const list of lists) {
+        app.makeListInDOM(list);
+        for(const card of list.cards) {
+          app.makeCardInDOM(card);
+        }
+      }
+
+    } catch(error) {
+      console.error(error);
+      alert('Impossible de récupérer les listes !');
+    }
   }
 
 };

@@ -7,6 +7,7 @@ var app = {
   init: function () {
     app.base_url='http://localhost:3000',
     app.addListenerToActions();
+    // call de getListsFromAPI pour charger les listes déjà présente dans l'API
     app.getListsFromAPI();    
   },
  
@@ -57,15 +58,17 @@ var app = {
   handleAddListForm: async function(event) {
     // il faut empêcher le comportement par défaut de l'event submit, à savoir l'envoi d'une requête HTTP et donc le rechargement de la page
     event.preventDefault();
+    //je met en place un compteur pour donner une position à la liste
+    const position = document.querySelectorAll('.column.is-one-quarter.panel').length  
     // récupérer les infos du formulaire
-    const position = document.querySelectorAll('.column.is-one-quarter.panel').length
-    
     const formData = new FormData(event.target);
+    // j'incrémente position contenu dans formData 
     formData.append("position", position+1)
+    // j'initie un await fetch qui check l'URL de l'API en method POST et envoi les données sur le ody pour créer une list en BDD 
     const response = await fetch(`${app.base_url}/list`, {method: 'POST', body:formData})
+    // je transform res en json
     const listData = await response.json()
-    // faire apparaitre une nouvelle liste dans le DOM
-    
+    // faire apparaitre une nouvelle liste dans le DOM    
     app.makeListInDOM(listData);
     // reset les champs du formulaire
     event.target.reset();
@@ -80,21 +83,27 @@ var app = {
     const cloneTemplate = document.importNode(template.content, true);
     // le modifier (nom de la liste)
     cloneTemplate.querySelector('h2').textContent = list.name;  
+    // je change la valeur contenu dans l'atribut data-list-id ="" par la valeur de list.id
     cloneTemplate.querySelector('.column[data-list-id=""]').dataset.listId = list.id;
     // insérer dans la page concrètement
     document.querySelector('.card-lists').appendChild(cloneTemplate);
-    app.addListenerToActions();    
+    //pour pouvoir inserer une carte je dois re-checker les eventListener donc je re-call ma fonction addListenerToActions
+    app.addListenerToActions();
   },
+
   handleAddCardForm: async function(event) {
-    event.preventDefault();
-    const position = document.querySelectorAll('.box[data-card-id=""]').length
     // empêcher le rechargement de la page
+    event.preventDefault();
+    //je met en place un compteur pour donner une position à la carte dans la liste
+    const position = document.querySelectorAll('.box[data-card-id=""]').length
     // récupérer les infos du formulaire
     const formData = new FormData(event.target);
+    // j'incrémente position contenu dans formData
     formData.append("position", position+1)
+    // j'initie un await fetch qui check l'URL de l'API en method POST et envoi les données sur le ody pour créer une list en BDD
     const response = await fetch(`${app.base_url}/card`, {method: 'POST', body:formData})
-    const cardData = await response.json()
-    console.log('LOLOLOLOLOLOLOLO',cardData)
+    // je transform res en json
+    const cardData = await response.json()    
     // créer la carte dans le DOM  
     app.makeCardInDOM(cardData);
     // reset les champs du formulaire
@@ -102,8 +111,8 @@ var app = {
     // cacher la modale
     app.hideModals();
   },
-  makeCardInDOM: async function(card) {
-    
+
+  makeCardInDOM: async function(card) {    
     // récupérer le template de card
     const template = document.getElementById('templateCard');
     // cloner le template
@@ -112,25 +121,35 @@ var app = {
     cloneTemplate.querySelector('.column').textContent = card.title;
     // insérer le clone du template dans la bonne liste du DOM
     cloneTemplate.querySelector(`.box[data-card-id=""]`).dataset.cardId = card.id
-    const listDOM =document.querySelector(`.panel[data-list-id="${card.list_id}"]`);
-    
+    //j'initie listDOM dans makCardInDOM pour donner la card à la list qui possède la bonne list_id
+    const listDOM =document.querySelector(`.panel[data-list-id="${card.list_id}"]`);    
     // on insère la carte dans le block container de list
     listDOM.querySelector('.panel-block').appendChild(cloneTemplate);    
 
   },
+
   getListsFromAPI: async function(req, res) {
+
     try {
-      const response = await fetch(`${app.base_url}/list`);      
-      const lists = await response.json();  
+      // je lance un fetch pour interoger l'API sur la route liste en method GET par deffaut
+      const response = await fetch(`${app.base_url}/list`);  
+      // je transform res en json
+      const lists = await response.json();
+      // je boucle sur la reponse pour récupérer une list à chaque itération
       lists.forEach( (list) => { 
-        console.log(list)       
+        // je crée une liste à chaque boucle
         app.makeListInDOM(list); 
-        list.cards.forEach( (card) =>{ app.makeCardInDOM(card)})
+        // puis je récupére une les cartes dans le tableau d'objet cards 
+        list.cards.forEach( (card) =>{ 
+          // et je les crées le DOM
+          app.makeCardInDOM(card)
+        })
       })
     } catch (error) {
       console.log(error)
     }
   },
+
 };
 
 

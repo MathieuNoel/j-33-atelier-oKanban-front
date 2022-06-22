@@ -65,7 +65,7 @@ var app = {
     // j'incrémente position contenu dans formData 
     formData.append("position", position+1)
     // j'initie un await fetch qui check l'URL de l'API en method POST et envoi les données sur le ody pour créer une list en BDD 
-    const response = await fetch(`${app.base_url}/list`, {method: 'POST', body:formData})
+    const response = await fetch(`${app.base_url}/lists`, {method: 'POST', body:formData})
     // je transform res en json
     const listData = await response.json()
     // faire apparaitre une nouvelle liste dans le DOM    
@@ -85,10 +85,10 @@ var app = {
     cloneTemplate.querySelector('h2').textContent = list.name;  
     // je change la valeur contenu dans l'atribut data-list-id ="" par la valeur de list.id
     cloneTemplate.querySelector('.column[data-list-id=""]').dataset.listId = list.id;
+    // ajouter un écouteur d'event click sur le boutons + de la nouvelle carte
+    cloneTemplate.querySelector('.panel a.is-pulled-right').addEventListener('click', app.showAddCardModal);    
     // insérer dans la page concrètement
-    document.querySelector('.card-lists').appendChild(cloneTemplate);
-    //pour pouvoir inserer une carte je dois re-checker les eventListener donc je re-call ma fonction addListenerToActions
-    app.addListenerToActions();
+    document.querySelector('.card-lists').appendChild(cloneTemplate);  
   },
 
   handleAddCardForm: async function(event) {
@@ -101,7 +101,7 @@ var app = {
     // j'incrémente position contenu dans formData
     formData.append("position", position+1)
     // j'initie un await fetch qui check l'URL de l'API en method POST et envoi les données sur le ody pour créer une list en BDD
-    const response = await fetch(`${app.base_url}/card`, {method: 'POST', body:formData})
+    const response = await fetch(`${app.base_url}/cards`, {method: 'POST', body:formData})
     // je transform res en json
     const cardData = await response.json()    
     // créer la carte dans le DOM  
@@ -119,6 +119,8 @@ var app = {
     const cloneTemplate = document.importNode(template.content, true);
     // modifier le titre de la carte
     cloneTemplate.querySelector('.column').textContent = card.title;
+
+    cloneTemplate.querySelector('.box').style.backgroundColor = card.color
     // insérer le clone du template dans la bonne liste du DOM
     cloneTemplate.querySelector(`.box[data-card-id=""]`).dataset.cardId = card.id
     //j'initie listDOM dans makCardInDOM pour donner la card à la list qui possède la bonne list_id
@@ -131,8 +133,8 @@ var app = {
   getListsFromAPI: async function(req, res) {
 
     try {
-      // je lance un fetch pour interoger l'API sur la route liste en method GET par deffaut
-      const response = await fetch(`${app.base_url}/list`);  
+      // je lance un fetch pour interoger l'API sur la route /list en method GET par déffaut
+      const response = await fetch(`${app.base_url}/lists`);  
       // je transform res en json
       const lists = await response.json();
       // je boucle sur la reponse pour récupérer une list à chaque itération

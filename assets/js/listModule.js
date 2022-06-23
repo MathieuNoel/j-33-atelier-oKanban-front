@@ -6,8 +6,13 @@ const listModule = {
     handleAddListForm: async function(event) {
         // il faut empêcher le comportement par défaut de l'event submit, à savoir l'envoi d'une requête HTTP et donc le rechargement de la page
         event.preventDefault();
+        //je met en place un compteur pour donner une position à la liste
+        const position = document.querySelectorAll('.column.is-one-quarter.panel').length 
+        console.log(position);       
         // récupérer les infos du formulaire
         const formData = new FormData(event.target);
+        // j'incrémente position contenu dans formData
+        formData.append("position", position+1)
         try {
           // on fait un call API en POST sur /lists
           const response = await fetch(`${utilsModule.base_url}/lists`, {
@@ -28,6 +33,7 @@ const listModule = {
         utilsModule.hideModals();
       },
       makeListInDOM: function(list) {
+        // console.log(list);
         // créer une nouvelle liste dans le DOM
         // récupérer le template
         const template = document.getElementById('templateList');
@@ -35,6 +41,12 @@ const listModule = {
         const cloneTemplate = document.importNode(template.content, true);
         // modifier son data attribute id
         cloneTemplate.querySelector('.panel').dataset.listId = list.id;
+        const cardsContainer = cloneTemplate.querySelector('.cards-Container');
+        Sortable.create(cardsContainer, { group:"cartes",
+          onEnd: cardModule.handleCardMoves
+        });
+        // modifier son data attribute position
+        cloneTemplate.querySelector('.panel').dataset.listPosition = list.position;
         // modifier l'id du input hidden du formulaire d'édition
         const editForm = cloneTemplate.querySelector('.edit-list-form');
         editForm.querySelector('input[name="list-id"]').value = list.id;
@@ -51,6 +63,9 @@ const listModule = {
         cloneTemplate.querySelector('.delete-list-icon').addEventListener('click', listModule.deleteList);
         // insérer dans la page concrètement
         document.querySelector('.card-lists').appendChild(cloneTemplate);
+        const cardContainer = document.querySelector('.card-lists')
+        new Sortable.create(cardContainer);
+        
       },
       showEditListForm: function(event) {
         // cacher le h2
@@ -103,5 +118,31 @@ const listModule = {
           alert('Impossible de supprimer la liste !');
           console.error(error);
         }
+      },
+
+      
+    async handleListMoves(e) {
+    const containerElm = e.target;
+    const listsElms = containerElm.children
+    for (let i = 0; i < listsElms.length; i++) {
+      const element = listsElms[i];
+      const formData = new FormData();
+      formData.set("position", i);
+
+      console.log(Object.fromEntries(formData));
+      try {
+        const response = await fetch(`${utilsModule.base_url}/lists/${element.dataset.listId}`, {
+          method: 'PATCH',
+          body: formData
+        });
+        if (!response.ok) throw new Error(response.status)
+      } catch (error) {
+        console.log(error);
+        alert(error);
       }
+
+    }
+  }
 }
+
+

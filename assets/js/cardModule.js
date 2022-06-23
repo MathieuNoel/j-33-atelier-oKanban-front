@@ -37,6 +37,16 @@ const cardModule = {
         // modifie l'identifiant de la carte dans le DOM
         const cardDOM = cloneTemplate.querySelector('.box');
         cardDOM.dataset.cardId = card.id;
+        // Sortable.create(cardDOM, {
+        //   group:{
+        //     name:"test",
+        //     pull:'clone'
+        //   },
+        //   draggable:'.tag',
+        //   onEnd:tagModule.handleCloneTag
+        // });
+        // const descriptionElm = cloneTemplate.querySelector('.card-description');
+        // descriptionElm.textContent = card.description;  
         // modifier le titre de la carte
         cloneTemplate.querySelector('.column').textContent = card.title;
         // modifier sa couleur de fond
@@ -51,9 +61,11 @@ const cardModule = {
         // modifie l'id du formulaire d'édition
         editForm.querySelector('input[name="card-id"]').value = card.id;
         // insérer le clone du template dans la bonne liste du DOM
-        const listDOM = document.querySelector(`.panel[data-list-id="${card.list_id}"]`);
+        const listDOM = document.querySelector(`.panel[data-list-id="${card.list_id}"] .panel-block`);
+        new Sortable.create(listDOM)  
         // on insère la carte dans le block container de list
-        listDOM.querySelector('.panel-block').appendChild(cloneTemplate);
+        listDOM.appendChild(cloneTemplate);
+        
       },
       showEditCardForm: function(event) {
         const cardDOM = event.target.closest('.box');
@@ -109,5 +121,28 @@ const cardModule = {
           alert('Impossible de supprimer cette carte !');
           console.error(error);
         }
+      },  
+  async handleCardMoves(e) {
+    const containerElm = e.to;
+    
+    const listId=containerElm.closest("[data-list-id]").dataset.listId
+    ;
+    const cardsElms = containerElm.children
+    for (let i = 0; i < cardsElms.length; i++) {
+      const element = cardsElms[i];
+      const formData = new FormData();
+      formData.set("position", i);
+      formData.set("listId",listId);      
+      try {
+        const response = await fetch(`${cardModule.base_url}/cards/${listId}`, {
+          method: 'PATCH',
+          body: formData
+        });
+        if (!response.ok) throw new Error(response.status)
+      } catch (error) {
+        console.log(error);
+        alert(error);
       }
+    }
+  },
 }

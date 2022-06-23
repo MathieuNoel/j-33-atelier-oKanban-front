@@ -1,10 +1,22 @@
 
 // on objet qui contient des fonctions
 var app = {
+  
   // fonction d'initialisation, lancée au chargement de la page
   init: function () {
     app.getListsFromAPI();
     app.addListenerToActions();
+
+
+      const listsContainer=document.querySelector('.lists-container');
+      // console.log('LALALALA',listsContainer)
+      //!possibilité de déplacer les listes
+      Sortable.create(listsContainer,{
+        onEnd:listModule.handleListMoves
+      });
+    
+
+
   },
   addListenerToActions: function() {
     // mettre un écouteur d'évènement clic sur le bouton d'ajout de liste
@@ -34,7 +46,7 @@ var app = {
       // on appelle la méthode json sur l'objet response obtenu pour récupérer directement notre tableau de listes (la data)
       const lists = await response.json();
 
-      console.log(lists);
+      
       
       // dessiner les listes dans le DOM
       for(const list of lists) {
@@ -48,7 +60,11 @@ var app = {
       console.error(error);
       alert('Impossible de récupérer les listes !');
     }
-  }
-};
+  },
+
+  
+} 
 // on accroche un écouteur d'évènement sur le document : quand le chargement est terminé, on lance app.init
 document.addEventListener('DOMContentLoaded', app.init );
+
+

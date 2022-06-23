@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css">
     <link rel="stylesheet" href="./assets/css/style.css">
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
 </head>
 
 <body>
@@ -19,7 +21,7 @@
             <div class="columns">
 
                 <div class="column is-full">
-                    <div class="card-lists columns">
+                    <div class="card-lists columns" id="lists">
                         
                     </div>
                 </div>
@@ -88,9 +90,9 @@
         </div>
     </div>
 
-    <template id="templateList">
+    <template id="templateList" class="lists-container">
         <!-- list -->
-        <div class="column is-one-quarter panel" data-list-id="">
+        <div class="column is-one-quarter panel " data-list-id="" data-list-position="">
             <div class="panel-heading has-background-info">
                 <div class="columns">
 
@@ -125,14 +127,14 @@
                     </div>
                 </div>
             </div>
-            <div class="panel-block is-block has-background-light">
+            <div class="panel-block is-block has-background-light cards-Container">
                 
             </div>
         </div>
         <!--/ list -->
     </template>
 
-    <template id="templateCard">
+    <template id="templateCard" class="cards-container">
         <!-- card -->
         <div class="box" data-card-id="">
             <div class="columns">
@@ -172,6 +174,11 @@
         <!--/ card -->
     </template>
 
+    <template id="tagTemplate">
+        <span class="tag tag-name" data-tag-id="">
+            Tag label
+        </span>
+    </template>
     <!-- Chargement de mon fichier JS -->
     <script src="./assets/js/app.js"></script>
     <script src="./assets/js/utilsModule.js"></script>
@@ -180,3 +187,7 @@
 </body>
 
 </html>
+
+
+
+

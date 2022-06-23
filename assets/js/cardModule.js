@@ -80,6 +80,8 @@ const cardModule = {
           if(!response.ok) throw json;
           // modifier le titre de la carte dans le DOM
           titleCardDOM.textContent = json.title;
+          // modifier la couleur de la carte dans le DOM
+          event.target.closest('.box').style.backgroundColor = json.color;
         } catch(error) {
           alert('Impossible de modifier la carte !');
           console.error(error);

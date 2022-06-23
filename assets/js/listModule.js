@@ -63,11 +63,8 @@ const listModule = {
             method: 'PATCH',
             body: formData
           }); 
-          // je test si une réponce est bien reçu
-          if(!response.ok){
-            // sinon
-            throw new Error(response.status)
-          }         
+          // je test si une réponce est bien reçu, sinon, throw
+          if(!response.ok)throw new Error(response.status)           
         } catch (error) {
           console.log(error)
         }

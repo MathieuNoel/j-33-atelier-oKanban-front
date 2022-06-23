@@ -41,9 +41,71 @@ const cardModule = {
         cloneTemplate.querySelector('.column').textContent = card.title;
         // modifier sa couleur de fond
         cardDOM.style.backgroundColor = card.color;
+        // ajouter un écouteur d'event click sur le bouton pour modifier une carte
+        cardDOM.querySelector('.edit-card-icon').addEventListener('click', cardModule.showEditCardForm);
+        // ajouter un écouteur d'event click sur le bouton de suppression de carte
+        cardDOM.querySelector('.delete-card-icon').addEventListener('click', cardModule.deleteCard);
+        // ajouter un écouteur d'event submit sur le formulaire d'édition pour modifier une carte
+        const editForm = cardDOM.querySelector('.edit-card-form');
+        editForm.addEventListener('submit', cardModule.handleEditCardForm);
+        // modifie l'id du formulaire d'édition
+        editForm.querySelector('input[name="card-id"]').value = card.id;
         // insérer le clone du template dans la bonne liste du DOM
         const listDOM = document.querySelector(`.panel[data-list-id="${card.list_id}"]`);
         // on insère la carte dans le block container de list
         listDOM.querySelector('.panel-block').appendChild(cloneTemplate);
       },
+      showEditCardForm: function(event) {
+        const cardDOM = event.target.closest('.box');
+        // on cache le titre de la carte
+        cardDOM.querySelector('.card-title').classList.add('is-hidden');
+        // on affiche le formulaire d'édition
+        cardDOM.querySelector('.edit-card-form').classList.remove('is-hidden');
+      },
+      handleEditCardForm: async function(event) {
+        // empêcher le rechargement de la page
+        event.preventDefault();
+        // récupérer les infos du formulaire
+        const formData = new FormData(event.target);
+        // faire un call API en PATCH sur /cards/:id
+        const titleCardDOM = event.target.previousElementSibling;
+        try {
+          const response = await fetch(`${utilsModule.base_url}/cards/${formData.get('card-id')}`, {
+            method: 'PATCH',
+            body: formData
+          });
+          // on récupère la data (la carte modifiée ou l'erreur)
+          const json = await response.json();
+          // en cas de code non succès renvoie dans le catch l'erreur
+          if(!response.ok) throw json;
+          // modifier le titre de la carte dans le DOM
+          titleCardDOM.textContent = json.title;
+        } catch(error) {
+          alert('Impossible de modifier la carte !');
+          console.error(error);
+        }
+        // cacher le formulaire
+        event.target.classList.add('is-hidden');
+        // et réafficher le titre
+        titleCardDOM.classList.remove('is-hidden');
+      },
+      deleteCard: async function(event) {
+        // récupérer l'identifiant de la carte
+        const cardDOM = event.target.closest('.box');
+        // faire un call API en DELETE sur /cards/:id
+        try {
+          const response = await fetch(`${utilsModule.base_url}/cards/${cardDOM.dataset.cardId}`, {
+            method: 'DELETE'
+          });
+          // récupérer la data (un msg de succès ou d'erreur)
+          const json = await response.json();
+          // si on a un code d'erreur rejette dans le catch l'erreur
+          if(!response.ok) throw json;
+          // supprimer la carte du DOM
+          cardDOM.remove();
+        } catch(error) {
+          alert('Impossible de supprimer cette carte !');
+          console.error(error);
+        }
+      }
 }

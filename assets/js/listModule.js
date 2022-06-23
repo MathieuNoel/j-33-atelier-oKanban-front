@@ -46,7 +46,9 @@ const listModule = {
         // ajouter un écouteur d'event sur le formulaire d'édition pour pouvoir modifier le nom de la liste
         editForm.addEventListener('submit', listModule.handleEditListForm);
         // ajouter un écouteur d'event sur le bouton + pour afficher la modale de carte
-        cloneTemplate.querySelector('.panel a.is-pulled-right').addEventListener('click', cardModule.showAddCardModal);
+        cloneTemplate.querySelector('.add-list-icon').addEventListener('click', cardModule.showAddCardModal);
+        // ajouter un écouteur d'event sur le bouton poubelle pour supprimer la liste
+        cloneTemplate.querySelector('.delete-list-icon').addEventListener('click', listModule.deleteList);
         // insérer dans la page concrètement
         document.querySelector('.card-lists').appendChild(cloneTemplate);
       },
@@ -82,5 +84,24 @@ const listModule = {
         h2.classList.remove('is-hidden');
         // puis on masque le formulaire
         event.target.classList.add('is-hidden');
+      },
+      deleteList: async function(event) {
+        // si l'utilisateur refuse de supprimer la liste sort de la fonction
+        if(!confirm('Voulez-vous vraiment supprimer cette liste ?')) return;
+        // récupérer la liste dans le DOM
+        const listDOM = event.target.closest('.panel');
+        // faire un call API en DELETE sur /lists/:id
+        try {
+          const response = await fetch(`${utilsModule.base_url}/lists/${listDOM.dataset.listId}`, {
+            method: 'DELETE'
+          });
+          const json = await response.json();
+          if(!response.ok) throw json;
+          // supprimer la liste dans le DOM
+          listDOM.remove();
+        } catch(error) {
+          alert('Impossible de supprimer la liste !');
+          console.error(error);
+        }
       }
 }

@@ -1,3 +1,7 @@
+const utilsModule = require('./utilsModule');
+const labelModule = require('./labelModule');
+const cardModule = require('./cardModule');
+const listModule = require('./listModule');
 
 // on objet qui contient des fonctions
 var app = {

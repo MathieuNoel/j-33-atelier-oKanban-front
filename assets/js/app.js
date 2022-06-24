@@ -25,6 +25,8 @@ var app = {
     // }
     // ajouter un écouteur d'évènement submit sur le formulaire d'ajout de carte
     document.querySelector('#addCardModal form').addEventListener('submit', cardModule.handleAddCardForm);
+    // on va attacher un écouteur d'event submit sur le formulaire d'association d'un tag sur une carte
+    document.querySelector('#addTagToCardModal form').addEventListener('submit', labelModule.handleAssociateLabelForm);
   },
   // récupérer les listes depuis l'API et les afficher dans le DOM
   getListsFromAPI: async function() {
@@ -41,6 +43,10 @@ var app = {
         listModule.makeListInDOM(list);
         for(const card of list.cards) {
           cardModule.makeCardInDOM(card);
+          for(const label of card.labels) {
+            // dessiner les tag dans la carte du DOM
+            labelModule.makeLabelInDOM(label);
+          }
         }
       }
 

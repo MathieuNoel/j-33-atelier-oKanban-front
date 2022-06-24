@@ -48,6 +48,8 @@ const cardModule = {
         // ajouter un écouteur d'event submit sur le formulaire d'édition pour modifier une carte
         const editForm = cardDOM.querySelector('.edit-card-form');
         editForm.addEventListener('submit', cardModule.handleEditCardForm);
+        // ajouter un écouteur d'évènement click sur le bouton d'association de tag pour ouvrir la modale
+        cardDOM.querySelector('.associate-tag-icon').addEventListener('click', labelModule.showAssociateTagToCardModal);
         // modifie l'id du formulaire d'édition
         editForm.querySelector('input[name="card-id"]').value = card.id;
         // insérer le clone du template dans la bonne liste du DOM

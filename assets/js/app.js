@@ -50,7 +50,8 @@ var app = {
       new Sortable(listContainer, {
         // vu qu'il n'y a qu'un seul container pas besoin de group
         // on renseigne directement les éléments déplacable dans draggable, ici nos listes (.panel)
-        draggable: '.panel'
+        draggable: '.panel',
+        onEnd: listModule.dragList
       });
     } catch(error) {
       console.error(error);

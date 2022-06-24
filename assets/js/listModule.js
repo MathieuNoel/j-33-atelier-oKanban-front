@@ -54,7 +54,8 @@ const listModule = {
         const cardContainer = cloneTemplate.querySelector('.panel-block');
         new Sortable(cardContainer, {
           group: 'list',
-          draggable: '.box' // on lui renseigne ce qu'on veut déplacer, à savoir les cartes
+          draggable: '.box', // on lui renseigne ce qu'on veut déplacer, à savoir les cartes
+          onEnd: cardModule.dragCard
         });
         // insérer dans la page concrètement
         document.querySelector('.card-lists').appendChild(cloneTemplate);
@@ -110,5 +111,20 @@ const listModule = {
           alert('Impossible de supprimer la liste !');
           console.error(error);
         }
+      },
+      dragList: function(event) {
+        // récupérer les listes dans un tableau
+        const listsDOM = document.querySelectorAll('.panel');
+        listsDOM.forEach(async (listDOM, index) => {
+          // on créé un formData
+          const formData = new FormData();
+          // et on le rempli avec la position de la liste
+          formData.set('position', index);
+          // faire un call API en PATCH sur /lists/:id
+          const response = await fetch(`${utilsModule.base_url}/lists/${listDOM.dataset.listId}`, {
+            method: 'PATCH',
+            body: formData
+          });
+        });
       }
 }

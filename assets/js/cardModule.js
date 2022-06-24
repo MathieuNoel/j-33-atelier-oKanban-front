@@ -109,5 +109,58 @@ const cardModule = {
           alert('Impossible de supprimer cette carte !');
           console.error(error);
         }
+      },
+      dragCard: function(event) {
+        // on va modifier la position de toutes les cartes dans la liste d'origine
+        const originList = event.from;
+        // récupérer l'id de la liste
+        let listId = originList.closest('.panel').dataset.listId;
+        // on veut récupérer toutes les cartes
+        let cardsDOM = originList.querySelectorAll('.box');
+        // on modifie les infos des cartes de la liste d'origine
+        cardModule.updateAllCards(cardsDOM, listId);
+        // on teste voir si nos deux listes sont similaires, dans ce cas inutile d'executer le code du dessous
+        if(originList === event.to) return;
+        // on récupère la nouvelle liste
+        const newList = event.to;
+        // on réaffecte de nouvelles cartes à notre variable cardsDOM
+        cardsDOM = newList.querySelectorAll('.box');
+        // modifier l'id de liste
+        listId = newList.closest('.panel').dataset.listId
+        // on modifie les infos des cartes de la nouvelle liste
+        cardModule.updateAllCards(cardsDOM, listId);
+      },
+      updateAllCards: function(cardsDOM, listId) {
+        cardsDOM.forEach(async (cardDOM, index) => {
+         
+          const formData = new FormData();
+          // vu que formData n'a aucune information, on va lui passer manuellement l'info de la position avec la méthode set
+          formData.set('position', index);
+          formData.set('list_id', listId);
+
+          // const dataCard = {
+          //   id: cardDOM.dataset.cardID,
+          //   position: index
+          // }
+
+          try {
+            // faire un call API en PATCH sur /cards/:id
+            const response = await fetch(`${utilsModule.base_url}/cards/${cardDOM.dataset.cardId}`, {
+              // headers: {
+              //   'Accept': 'application/json',
+              //   'Content-Type': 'application/json'
+              // },
+              method: 'PATCH',
+              // on envoie la data qu'on veut modifier au format JSON
+              body: formData
+            });
+            const json = await response.json();
+            if(!response.ok) throw json;
+          } catch(error) {
+            alert('Impossible de déplacer la carte !');
+            console.error(error);
+          }
+          
+        });
       }
 }

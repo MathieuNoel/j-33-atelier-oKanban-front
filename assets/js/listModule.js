@@ -49,6 +49,13 @@ const listModule = {
         cloneTemplate.querySelector('.add-list-icon').addEventListener('click', cardModule.showAddCardModal);
         // ajouter un écouteur d'event sur le bouton poubelle pour supprimer la liste
         cloneTemplate.querySelector('.delete-list-icon').addEventListener('click', listModule.deleteList);
+        // Drag & Drop des cartes au sein de la liste
+        // on va chopper l'élément qui va contenir nos cartes, ici la div panel-block
+        const cardContainer = cloneTemplate.querySelector('.panel-block');
+        new Sortable(cardContainer, {
+          group: 'list',
+          draggable: '.box' // on lui renseigne ce qu'on veut déplacer, à savoir les cartes
+        });
         // insérer dans la page concrètement
         document.querySelector('.card-lists').appendChild(cloneTemplate);
       },

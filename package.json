@@ -22,7 +22,6 @@
   },
   "homepage": "https://github.com/O-clock-Daguerre/S07-atelier-oKanban-front-RED#readme",
   "dependencies": {
-    "browserify": "^17.0.0",
     "tinyify": "^3.0.0"
   }
 }

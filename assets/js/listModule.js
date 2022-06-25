@@ -1,3 +1,7 @@
+const utilsModule = require('./utilsModule');
+const labelModule = require('./labelModule');
+const cardModule = require('./cardModule');
+
 const listModule = {
   showAddListModal: function() {
       // afficher la modale à l'écran
@@ -128,3 +132,4 @@ const listModule = {
       });
     }
 }
+module.exports = listModule;

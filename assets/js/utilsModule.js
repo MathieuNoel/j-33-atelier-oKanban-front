@@ -1,3 +1,7 @@
+const listModule = require('./listModule');
+const labelModule = require('./labelModule');
+const cardModule = require('./cardModule');
+
 // module utilitaire utilisé par bon nombre d'autres modules
 const utilsModule = {
     base_url: 'http://localhost:3000',
@@ -11,3 +15,4 @@ const utilsModule = {
       },
 }
 
+module.exports = utilsModule ;

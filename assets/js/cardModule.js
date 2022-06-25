@@ -1,3 +1,6 @@
+const utilsModule = require('./utilsModule');
+const labelModule = require('./labelModule')
+const listModule = require('./listModule')
 const cardModule = {
   showAddCardModal: function(event) {
       // récupérer l'id de la bonne liste
@@ -165,4 +168,6 @@ const cardModule = {
         
       });
     }
-}
+  }
+
+  module.exports = cardModule;

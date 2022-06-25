@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "browserify": "^17.0.0",
+    "tinyify": "^3.0.0"
+  }
+}

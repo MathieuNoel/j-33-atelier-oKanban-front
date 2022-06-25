@@ -1,3 +1,6 @@
+const utilsModule = require('./utilsModule');
+const cardModule = require('./cardModule');
+const listModule = require('./listModule')
 const labelModule = {
   makeLabelInDOM: function(label) {
       // pas besoin de template car un label est ici un simple span
@@ -113,3 +116,4 @@ const labelModule = {
       
   }
 }
+module.exports = labelModule;
